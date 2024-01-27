@@ -25,16 +25,13 @@ namespace CustomSSPILibrary;
 /// NOTE: the original code was written as a way to use the underlying NTAuthenticate in 'server' mode, while we need to use it as 'client'. An attempt has been made to take
 /// that into account, but has not been fully tested.
 /// </remarks>
-internal sealed class ReflectedNegotiateState
+internal sealed class ReflectedNegotiateState : IDisposable
 {
     // https://www.gnu.org/software/gss/reference/gss.pdf
     private const uint GSS_S_NO_CRED = 7 << 16;
 
     private static readonly ConstructorInfo _constructor;
     private static readonly MethodInfo _getOutgoingBlob;
-    private static readonly MethodInfo _isCompleted;
-    private static readonly MethodInfo _protocol;
-    private static readonly MethodInfo _getIdentity;
     private static readonly MethodInfo _closeContext;
     private static readonly FieldInfo _statusCode;
     private static readonly FieldInfo _statusException;
@@ -54,10 +51,6 @@ internal sealed class ReflectedNegotiateState
         _constructor = ntAuthType.GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance).First();
         _getOutgoingBlob = ntAuthType.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).Where(info =>
             info.Name.Equals("GetOutgoingBlob") && info.GetParameters().Length == 3 && info.GetParameters()[0].ParameterType == typeof(byte[])).Single();
-        _isCompleted = ntAuthType.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).Where(info =>
-            info.Name.Equals("get_IsCompleted")).Single();
-        _protocol = ntAuthType.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).Where(info =>
-            info.Name.Equals("get_ProtocolName")).Single();
         _closeContext = ntAuthType.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).Where(info =>
             info.Name.Equals("CloseContext")).Single();
 
@@ -76,8 +69,6 @@ internal sealed class ReflectedNegotiateState
 #endif
 
         var negoStreamPalType = secAssembly.GetType("System.Net.Security.NegotiateStreamPal", throwOnError: true)!;
-        _getIdentity = negoStreamPalType.GetMethods(BindingFlags.NonPublic | BindingFlags.Static).Where(info =>
-            info.Name.Equals("GetIdentity")).Single();
         _getException = negoStreamPalType.GetMethods(BindingFlags.NonPublic | BindingFlags.Static).Where(info =>
             info.Name.Equals("CreateExceptionFromError")).Single();
     }
@@ -149,21 +140,6 @@ internal sealed class ReflectedNegotiateState
             ExceptionDispatchInfo.Capture(tex.InnerException!).Throw();
             throw;
         }
-    }
-
-    public bool IsCompleted
-    {
-        get => (bool)_isCompleted.Invoke(_instance, Array.Empty<object>())!;
-    }
-
-    public string Protocol
-    {
-        get => (string)_protocol.Invoke(_instance, Array.Empty<object>())!;
-    }
-
-    public IIdentity GetIdentity()
-    {
-        return (IIdentity)_getIdentity.Invoke(obj: null, parameters: new object[] { _instance })!;
     }
 
     public void Dispose()

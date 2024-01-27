@@ -11,9 +11,14 @@ using System.Threading.Tasks;
 
 namespace CustomSSPILibrary;
 
-internal class ReflectedNegotiateStateSSPIContextProvider : SSPIContextProvider
+internal sealed class ReflectedNegotiateStateSSPIContextProvider : SSPIContextProvider, IDisposable
 {
     private ReflectedNegotiateState? _negotiate;
+
+    public void Dispose()
+    {
+        _negotiate?.Dispose();
+    }
 
     protected override IMemoryOwner<byte> GenerateSspiClientContext(ReadOnlyMemory<byte> input)
     {
