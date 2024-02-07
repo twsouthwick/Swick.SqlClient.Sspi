@@ -28,19 +28,7 @@ internal sealed class ReflectedNegotiateStateSSPIContextProvider : SSPIContextPr
     {
         _negotiate ??= new("NTLM", new NetworkCredential(AuthenticationParameters.UserId, AuthenticationParameters.Password), AuthenticationParameters.ServerName);
 
-        var result = _negotiate.GetOutgoingBlob(input.Span.ToArray(), out var status, out var error);
-
-        if (error is { })
-        {
-            throw error;
-        }
-
-        if (status == BlobErrorType.None)
-        {
-            return new ArrayMemoryOwner(result);
-        }
-
-        throw new InvalidOperationException($"Negotiate error: {status}");
+        return new ArrayMemoryOwner(_negotiate.GetOutgoingBlob(input.Span.ToArray()));
     }
 }
 

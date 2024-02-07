@@ -36,7 +36,6 @@ internal sealed class NetCoreReflectedNegotiateState : IDisposable
     private static readonly FieldInfo _statusCode;
     private static readonly FieldInfo _statusException;
     private static readonly MethodInfo _getException;
-
 #if NET
     private static readonly FieldInfo? _gssMinorStatus;
     private static readonly Type? _gssExceptionType;
@@ -79,16 +78,32 @@ internal sealed class NetCoreReflectedNegotiateState : IDisposable
         _instance = _constructor.Invoke(new object?[] { false, package, credential, spn, 0, null });
     }
 
-    public byte[] GetOutgoingBlob(byte[]? incomingBlob, out BlobErrorType status, out Exception? error)
+    public byte[] GetOutgoingBlob(byte[]? incomingBlob)
+    {
+        var result = GetOutgoingBlob(incomingBlob, out var status, out var error);
+
+        if (error is { })
+        {
+            throw error;
+        }
+
+        if (status == BlobErrorType.None)
+        {
+            return result;
+        }
+
+        throw new InvalidOperationException($"Negotiate error: {status}");
+    }
+
+    private byte[] GetOutgoingBlob(byte[]? incomingBlob, out BlobErrorType status, out Exception? error)
     {
         try
         {
-            // byte[] GetOutgoingBlob(byte[] incomingBlob, bool throwOnError, out SecurityStatusPal statusCode)
             var parameters = new object?[] { incomingBlob, false, null };
             var blob = (byte[])_getOutgoingBlob.Invoke(_instance, parameters)!;
 
             var securityStatus = parameters[2];
-            // TODO: Update after corefx changes
+
             error = (Exception?)(_statusException.GetValue(securityStatus)
                 ?? _getException.Invoke(null, new[] { securityStatus }));
             var errorCode = (SecurityStatusPalErrorCode)_statusCode.GetValue(securityStatus)!;
@@ -176,6 +191,62 @@ internal sealed class NetCoreReflectedNegotiateState : IDisposable
             error == SecurityStatusPalErrorCode.AlgorithmMismatch ||
             error == SecurityStatusPalErrorCode.SecurityQosFailed ||
             error == SecurityStatusPalErrorCode.UnsupportedPreauth;
+    }
+
+    private enum BlobErrorType
+    {
+        None,
+        CredentialError,
+        ClientError,
+        Other
+    }
+    internal enum SecurityStatusPalErrorCode
+    {
+        NotSet = 0,
+        OK,
+        ContinueNeeded,
+        CompleteNeeded,
+        CompAndContinue,
+        ContextExpired,
+        CredentialsNeeded,
+        Renegotiate,
+
+        // Errors
+        OutOfMemory,
+        InvalidHandle,
+        Unsupported,
+        TargetUnknown,
+        InternalError,
+        PackageNotFound,
+        NotOwner,
+        CannotInstall,
+        InvalidToken,
+        CannotPack,
+        QopNotSupported,
+        NoImpersonation,
+        LogonDenied,
+        UnknownCredentials,
+        NoCredentials,
+        MessageAltered,
+        OutOfSequence,
+        NoAuthenticatingAuthority,
+        IncompleteMessage,
+        IncompleteCredentials,
+        BufferNotEnough,
+        WrongPrincipal,
+        TimeSkew,
+        UntrustedRoot,
+        IllegalMessage,
+        CertUnknown,
+        CertExpired,
+        DecryptFailure,
+        AlgorithmMismatch,
+        SecurityQosFailed,
+        SmartcardLogonRequired,
+        UnsupportedPreauth,
+        BadBinding,
+        DowngradeDetected,
+        ApplicationProtocolMismatch
     }
 }
 
