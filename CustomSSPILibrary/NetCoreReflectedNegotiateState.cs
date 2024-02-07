@@ -25,7 +25,7 @@ namespace CustomSSPILibrary;
 /// NOTE: the original code was written as a way to use the underlying NTAuthenticate in 'server' mode, while we need to use it as 'client'. An attempt has been made to take
 /// that into account, but has not been fully tested.
 /// </remarks>
-internal sealed class ReflectedNegotiateState : IDisposable
+internal sealed class NetCoreReflectedNegotiateState : IDisposable
 {
     // https://www.gnu.org/software/gss/reference/gss.pdf
     private const uint GSS_S_NO_CRED = 7 << 16;
@@ -44,7 +44,7 @@ internal sealed class ReflectedNegotiateState : IDisposable
 
     private readonly object _instance;
 
-    static ReflectedNegotiateState()
+    static NetCoreReflectedNegotiateState()
     {
         var secAssembly = typeof(AuthenticationException).Assembly;
         var ntAuthType = secAssembly.GetType("System.Net.NTAuthentication", throwOnError: true)!;
@@ -73,7 +73,7 @@ internal sealed class ReflectedNegotiateState : IDisposable
             info.Name.Equals("CreateExceptionFromError")).Single();
     }
 
-    public ReflectedNegotiateState(string package, NetworkCredential credential, string spn)
+    public NetCoreReflectedNegotiateState(string package, NetworkCredential credential, string spn)
     {
         // internal NTAuthentication(bool isServer, string package, NetworkCredential credential, string spn, ContextFlagsPal requestedContextFlags, ChannelBinding channelBinding)
         _instance = _constructor.Invoke(new object?[] { false, package, credential, spn, 0, null });

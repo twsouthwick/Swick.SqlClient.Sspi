@@ -9,6 +9,8 @@ public static class NtlmExtensions
 #if NET7_0_OR_GREATER
         connection.SSPIContextProviderFactory = () => new NegotiateAuthenticationSSPIContextProvider();
 #else
+        _ = new NetCoreReflectedNegotiateState("alksdjf", new("", ""), "");
+
         connection.SSPIContextProviderFactory = () => new ReflectedNegotiateStateSSPIContextProvider();
 #endif
 
