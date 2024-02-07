@@ -13,7 +13,11 @@ namespace CustomSSPILibrary;
 
 internal sealed class ReflectedNegotiateStateSSPIContextProvider : SSPIContextProvider, IDisposable
 {
+#if NETFRAMEWORK
+    private FrameworkReflectedNegotiateState? _negotiate;
+#else
     private NetCoreReflectedNegotiateState? _negotiate;
+#endif
 
     public void Dispose()
     {
@@ -22,7 +26,7 @@ internal sealed class ReflectedNegotiateStateSSPIContextProvider : SSPIContextPr
 
     protected override IMemoryOwner<byte> GenerateSspiClientContext(ReadOnlyMemory<byte> input)
     {
-        _negotiate ??= new ("NTLM", new NetworkCredential(AuthenticationParameters.UserId, AuthenticationParameters.Password), AuthenticationParameters.ServerName);
+        _negotiate ??= new("NTLM", new NetworkCredential(AuthenticationParameters.UserId, AuthenticationParameters.Password), AuthenticationParameters.ServerName);
 
         var result = _negotiate.GetOutgoingBlob(input.Span.ToArray(), out var status, out var error);
 

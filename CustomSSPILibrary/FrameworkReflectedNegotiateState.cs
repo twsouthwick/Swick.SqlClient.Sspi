@@ -1,7 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-#if !NET7_0_OR_GREATER && !NETFRAMEWORK
+#if NETFRAMEWORK
 
 #pragma warning disable CA1810 // Initialize all static fields inline.
 
@@ -25,7 +25,7 @@ namespace CustomSSPILibrary;
 /// NOTE: the original code was written as a way to use the underlying NTAuthenticate in 'server' mode, while we need to use it as 'client'. An attempt has been made to take
 /// that into account, but has not been fully tested.
 /// </remarks>
-internal sealed class NetCoreReflectedNegotiateState : IDisposable
+internal sealed class FrameworkReflectedNegotiateState : IDisposable
 {
     // https://www.gnu.org/software/gss/reference/gss.pdf
     private const uint GSS_S_NO_CRED = 7 << 16;
@@ -37,14 +37,9 @@ internal sealed class NetCoreReflectedNegotiateState : IDisposable
     private static readonly FieldInfo _statusException;
     private static readonly MethodInfo _getException;
 
-#if NET
-    private static readonly FieldInfo? _gssMinorStatus;
-    private static readonly Type? _gssExceptionType;
-#endif
-
     private readonly object _instance;
 
-    static NetCoreReflectedNegotiateState()
+    static FrameworkReflectedNegotiateState()
     {
         var secAssembly = typeof(AuthenticationException).Assembly;
         var ntAuthType = secAssembly.GetType("System.Net.NTAuthentication", throwOnError: true)!;
@@ -58,22 +53,12 @@ internal sealed class NetCoreReflectedNegotiateState : IDisposable
         _statusCode = securityStatusType.GetField("ErrorCode")!;
         _statusException = securityStatusType.GetField("Exception")!;
 
-#if NET
-        if (!OperatingSystem.IsWindows())
-        {
-            var interopType = secAssembly.GetType("Interop", throwOnError: true)!;
-            var netNativeType = interopType.GetNestedType("NetSecurityNative", BindingFlags.NonPublic | BindingFlags.Static)!;
-            _gssExceptionType = netNativeType.GetNestedType("GssApiException", BindingFlags.NonPublic)!;
-            _gssMinorStatus = _gssExceptionType.GetField("_minorStatus", BindingFlags.Instance | BindingFlags.NonPublic)!;
-        }
-#endif
-
         var negoStreamPalType = secAssembly.GetType("System.Net.Security.NegotiateStreamPal", throwOnError: true)!;
         _getException = negoStreamPalType.GetMethods(BindingFlags.NonPublic | BindingFlags.Static).Where(info =>
             info.Name.Equals("CreateExceptionFromError")).Single();
     }
 
-    public NetCoreReflectedNegotiateState(string package, NetworkCredential credential, string spn)
+    public FrameworkReflectedNegotiateState(string package, NetworkCredential credential, string spn)
     {
         // internal NTAuthentication(bool isServer, string package, NetworkCredential credential, string spn, ContextFlagsPal requestedContextFlags, ChannelBinding channelBinding)
         _instance = _constructor.Invoke(new object?[] { false, package, credential, spn, 0, null });
@@ -92,26 +77,6 @@ internal sealed class NetCoreReflectedNegotiateState : IDisposable
             error = (Exception?)(_statusException.GetValue(securityStatus)
                 ?? _getException.Invoke(null, new[] { securityStatus }));
             var errorCode = (SecurityStatusPalErrorCode)_statusCode.GetValue(securityStatus)!;
-
-#if NET
-            // TODO: Remove after corefx changes
-            // The linux implementation always uses InternalError;
-            if (errorCode == SecurityStatusPalErrorCode.InternalError
-                && !OperatingSystem.IsWindows()
-                && _gssExceptionType!.IsInstanceOfType(error))
-            {
-                var majorStatus = (uint)error.HResult;
-                var minorStatus = (uint)_gssMinorStatus!.GetValue(error)!;
-
-                // Remap specific errors
-                if (majorStatus == GSS_S_NO_CRED && minorStatus == 0)
-                {
-                    errorCode = SecurityStatusPalErrorCode.UnknownCredentials;
-                }
-
-                error = new Exception($"An authentication exception occurred (0x{majorStatus:X}/0x{minorStatus:X}).", error);
-            }
-#endif
 
             if (errorCode == SecurityStatusPalErrorCode.OK
                 || errorCode == SecurityStatusPalErrorCode.ContinueNeeded
@@ -178,5 +143,5 @@ internal sealed class NetCoreReflectedNegotiateState : IDisposable
             error == SecurityStatusPalErrorCode.UnsupportedPreauth;
     }
 }
-
 #endif
+
