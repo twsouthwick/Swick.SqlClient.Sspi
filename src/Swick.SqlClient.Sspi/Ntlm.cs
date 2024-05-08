@@ -33,6 +33,8 @@ public static class Ntlm
                 Console.WriteLine($"User: {AuthenticationParameters.UserId}");
                 Console.WriteLine($"Server: {AuthenticationParameters.UserId}");
                 Console.WriteLine($"Password {!string.IsNullOrEmpty(AuthenticationParameters.Password)}");
+
+                _initialized = true;
             }
 
             Console.WriteLine($"Incoming blob: {Convert.ToBase64String(incomingBlob.ToArray())}");
