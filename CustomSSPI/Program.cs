@@ -1,6 +1,10 @@
 ﻿using Microsoft.Data.SqlClient;
 
-var connectionString = "Server=localhost;User ID=someUser;Password=somePassword;Integrated Security=SSPI;Initial Catalog=master";
+if (args is not [string connectionString])
+{
+    Console.WriteLine("Must supply at least a connection string");
+    return;
+}
 
 using var sqlconnection = new SqlConnection(connectionString)
 {
