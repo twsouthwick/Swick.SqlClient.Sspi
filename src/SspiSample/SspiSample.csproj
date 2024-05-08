@@ -9,11 +9,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="IndexRange" Version="1.0.3" />
+    <PackageReference Include="Polyfill" Version="5.2.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Swick.SqlClient.Ntlm\Swick.SqlClient.Ntlm.csproj" />
+    <ProjectReference Include="..\Swick.SqlClient.Sspi\Swick.SqlClient.Sspi.csproj" />
   </ItemGroup>
 
 

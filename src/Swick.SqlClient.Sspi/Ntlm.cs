@@ -1,7 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using System.Buffers;
 
-namespace Swick.SqlClient;
+namespace Swick.SqlClient.Sspi;
 
 public static class Ntlm
 {

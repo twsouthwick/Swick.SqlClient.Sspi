@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
+using Swick.SqlClient.Sspi;
 
 if (args is not [string connectionString])
 {
@@ -8,7 +9,7 @@ if (args is not [string connectionString])
 
 using var sqlconnection = new SqlConnection(connectionString)
 {
-    SSPIContextProviderFactory = Swick.SqlClient.Ntlm.CreateLoggingProvider
+    SSPIContextProviderFactory = Ntlm.CreateLoggingProvider
 };
 
 await sqlconnection.OpenAsync();
