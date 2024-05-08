@@ -25,7 +25,7 @@ jobs:
     - name: Restore dependencies
       run: dotnet build -c RELEASE
     - name: Publish net462
-      run: dotnet publish -c RELEASE -f net462 --sc --no-restore --no-build ./src/SspiSample/SspiSample.csproj
+      run: dotnet publish -c RELEASE -f net462 -r win-x64 --no-restore --no-build ./src/SspiSample/SspiSample.csproj
     - name: Publish net6.0
       run: dotnet publish -c RELEASE -f net6.0 --sc --no-restore --no-build ./src/SspiSample/SspiSample.csproj
     - name: Publish net8.0
