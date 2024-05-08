@@ -20,6 +20,7 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
+    - name: Publish net462
       run: dotnet publish -c RELEASE -f net462 -r win-x64 ./src/SspiSample/SspiSample.csproj
     - name: Publish net6.0
       run: dotnet publish -c RELEASE -f net6.0 --sc ./src/SspiSample/SspiSample.csproj
