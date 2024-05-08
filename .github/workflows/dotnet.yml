@@ -13,20 +13,24 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        configuration: [ debug, release ]
+        tfm: [ net462, net6.0, net8.0 ]
+        rid: [ win-x64, linux-x64 ]
+        exclude:
+          - tfm: net462
+            rid: linux-x64
 
     steps:
     - uses: actions/checkout@v4
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-    - name: Publish net462
-      run: dotnet publish -c RELEASE -f net462 -r win-x64 ./src/SspiSample/SspiSample.csproj
-    - name: Publish net6.0
-      run: dotnet publish -c RELEASE -f net6.0 --sc ./src/SspiSample/SspiSample.csproj
-    - name: Publish net8.0
-      run: dotnet publish -c RELEASE -f net8.0 --sc ./src/SspiSample/SspiSample.csproj
+    - name: Publish
+      run: dotnet publish -c ${{ matrix.configuration }} -f ${{ matrix.tfm }} -r ${{ matrix.rid }} ./src/SspiSample/SspiSample.csproj
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v4.3.3
       with:
+        name: ${{ matrix.tfm }} ${{ matrix.rid }} ${{ matrix.configuration }}
         path: artifacts/publish/SspiSample/**/*
+
