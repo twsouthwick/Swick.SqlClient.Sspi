@@ -27,7 +27,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
     - name: Publish
-      run: dotnet publish -c ${{ matrix.configuration }} -f ${{ matrix.tfm }} -r ${{ matrix.rid }} ./src/SspiSample/SspiSample.csproj
+      run: dotnet publish -c ${{ matrix.configuration }} -f ${{ matrix.tfm }} -r ${{ matrix.rid }} --sc ./src/SspiSample/SspiSample.csproj
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v4.3.3
       with:
