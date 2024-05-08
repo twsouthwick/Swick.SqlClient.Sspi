@@ -13,7 +13,7 @@ using System.Runtime.ExceptionServices;
 using System.Security.Authentication;
 using System.Security.Principal;
 
-namespace CustomSSPILibrary;
+namespace Swick.SqlClient;
 
 /// <summary>
 /// Taken from https://github.com/dotnet/aspnetcore/blob/ce92289ad77acd98cd6deab6c41b7fe0277cef83/src/Security/Authentication/Negotiate/src/Internal/ReflectedNegotiateState.cs

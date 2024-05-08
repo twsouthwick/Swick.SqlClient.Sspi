@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CustomSSPILibrary\CustomSSPILibrary.csproj" />
+    <ProjectReference Include="..\Swick.SqlClient.Ntlm\Swick.SqlClient.Ntlm.csproj" />
   </ItemGroup>
 
 

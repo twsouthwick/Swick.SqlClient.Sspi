@@ -9,7 +9,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CustomSSPILibrary;
+namespace Swick.SqlClient;
 
 internal class ReflectedNegotiateStateSSPIContextProvider : SSPIContextProvider, IDisposable
 {

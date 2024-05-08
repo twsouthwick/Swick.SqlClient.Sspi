@@ -1,7 +1,7 @@
-﻿using CustomSSPILibrary;
+﻿using Microsoft.Data.SqlClient;
 using System.Buffers;
 
-namespace Microsoft.Data.SqlClient;
+namespace Swick.SqlClient;
 
 public static class Ntlm
 {

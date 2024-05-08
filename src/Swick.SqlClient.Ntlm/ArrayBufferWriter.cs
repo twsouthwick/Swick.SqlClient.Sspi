@@ -1,4 +1,5 @@
 ﻿#if NETFRAMEWORK
+
 using System.Buffers;
 using System.Diagnostics;
 
@@ -12,7 +13,6 @@ sealed class ArrayBufferWriter<T> : IBufferWriter<T>
 
     private T[] _buffer;
     private int _index;
-
 
     /// <summary>
     /// Creates an instance of an <see cref="ArrayBufferWriter{T}"/>, in which data can be written to,

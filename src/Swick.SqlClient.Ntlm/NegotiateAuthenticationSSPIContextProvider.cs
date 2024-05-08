@@ -5,7 +5,7 @@ using System.Buffers;
 using System.Net;
 using System.Net.Security;
 
-namespace CustomSSPILibrary;
+namespace Swick.SqlClient;
 
 internal class NegotiateAuthenticationSSPIContextProvider : SSPIContextProvider
 {

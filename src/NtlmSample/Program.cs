@@ -8,7 +8,7 @@ if (args is not [string connectionString])
 
 using var sqlconnection = new SqlConnection(connectionString)
 {
-    SSPIContextProviderFactory = Ntlm.CreateLoggingProvider
+    SSPIContextProviderFactory = Swick.SqlClient.Ntlm.CreateLoggingProvider
 };
 
 await sqlconnection.OpenAsync();

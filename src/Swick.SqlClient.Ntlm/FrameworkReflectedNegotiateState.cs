@@ -13,7 +13,7 @@ using System.Runtime.ExceptionServices;
 using System.Security.Authentication;
 using System.Security.Principal;
 
-namespace CustomSSPILibrary;
+namespace Swick.SqlClient;
 
 /// <summary>
 /// Adapted from NetCoreReflectedNegotiatedState to work on framework.
