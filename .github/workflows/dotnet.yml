@@ -20,16 +20,11 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Restore dependencies
-      run: dotnet build -c RELEASE
-    - name: Publish net462
-      run: dotnet publish -c RELEASE -f net462 -r win-x64 --no-restore --no-build ./src/SspiSample/SspiSample.csproj
+      run: dotnet publish -c RELEASE -f net462 -r win-x64 ./src/SspiSample/SspiSample.csproj
     - name: Publish net6.0
-      run: dotnet publish -c RELEASE -f net6.0 --sc --no-restore --no-build ./src/SspiSample/SspiSample.csproj
+      run: dotnet publish -c RELEASE -f net6.0 --sc ./src/SspiSample/SspiSample.csproj
     - name: Publish net8.0
-      run: dotnet publish -c RELEASE -f net8.0 --sc --no-restore --no-build ./src/SspiSample/SspiSample.csproj
+      run: dotnet publish -c RELEASE -f net8.0 --sc ./src/SspiSample/SspiSample.csproj
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v4.3.3
       with:
