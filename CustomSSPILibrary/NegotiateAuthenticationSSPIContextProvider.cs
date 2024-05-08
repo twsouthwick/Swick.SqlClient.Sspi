@@ -7,7 +7,7 @@ using System.Net.Security;
 
 namespace CustomSSPILibrary;
 
-internal sealed class NegotiateAuthenticationSSPIContextProvider : SSPIContextProvider
+internal class NegotiateAuthenticationSSPIContextProvider : SSPIContextProvider
 {
     private NegotiateAuthentication? _negotiateAuth = null;
 

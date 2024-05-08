@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace CustomSSPILibrary;
 
-internal sealed class ReflectedNegotiateStateSSPIContextProvider : SSPIContextProvider, IDisposable
+internal class ReflectedNegotiateStateSSPIContextProvider : SSPIContextProvider, IDisposable
 {
 #if NETFRAMEWORK
     private FrameworkReflectedNegotiateState? _negotiate;
