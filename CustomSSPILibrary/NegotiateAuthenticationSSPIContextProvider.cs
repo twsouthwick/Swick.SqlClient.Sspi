@@ -11,7 +11,7 @@ internal sealed class NegotiateAuthenticationSSPIContextProvider : SSPIContextPr
 {
     private NegotiateAuthentication? _negotiateAuth = null;
 
-    protected override IMemoryOwner<byte> GenerateSspiClientContext(ReadOnlyMemory<byte> received)
+    protected override void GenerateSspiClientContext(ReadOnlySpan<byte> incomingBlob, IBufferWriter<byte> outgoingBlobWriter)
     {
         _negotiateAuth ??= new(new NegotiateAuthenticationClientOptions
         {
@@ -20,14 +20,14 @@ internal sealed class NegotiateAuthenticationSSPIContextProvider : SSPIContextPr
             Credential = new NetworkCredential(AuthenticationParameters.UserId, AuthenticationParameters.Password)
         });
 
-        var sendBuff = _negotiateAuth.GetOutgoingBlob(received.Span, out NegotiateAuthenticationStatusCode statusCode)!;
+        var sendBuff = _negotiateAuth.GetOutgoingBlob(incomingBlob, out NegotiateAuthenticationStatusCode statusCode)!;
 
         if (statusCode is not NegotiateAuthenticationStatusCode.Completed and not NegotiateAuthenticationStatusCode.ContinueNeeded)
         {
             throw new InvalidOperationException($"Negotiate error: {statusCode}");
         }
 
-        return new ArrayMemoryOwner(sendBuff);
+        outgoingBlobWriter.Write(sendBuff);
     }
 }
 

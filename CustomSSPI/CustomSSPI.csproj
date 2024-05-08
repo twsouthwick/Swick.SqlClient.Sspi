@@ -9,11 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.20.0-pull.101908" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\CustomSSPILibrary\CustomSSPILibrary.csproj" />
   </ItemGroup>
+
 
 </Project>

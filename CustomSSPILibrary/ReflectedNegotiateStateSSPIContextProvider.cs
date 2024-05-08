@@ -24,11 +24,11 @@ internal sealed class ReflectedNegotiateStateSSPIContextProvider : SSPIContextPr
         _negotiate?.Dispose();
     }
 
-    protected override IMemoryOwner<byte> GenerateSspiClientContext(ReadOnlyMemory<byte> input)
+    protected override void GenerateSspiClientContext(ReadOnlySpan<byte> incomingBlob, IBufferWriter<byte> outgoingBlobWriter)
     {
         _negotiate ??= new("NTLM", new NetworkCredential(AuthenticationParameters.UserId, AuthenticationParameters.Password), AuthenticationParameters.ServerName);
 
-        return new ArrayMemoryOwner(_negotiate.GetOutgoingBlob(input.Span.ToArray()));
+        outgoingBlobWriter.Write(_negotiate.GetOutgoingBlob(incomingBlob.ToArray()));
     }
 }
 
