@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        configuration: [ debug, release ]
+        configuration: [ release ]
         tfm: [ net462, net6.0, net8.0 ]
         rid: [ win-x64, linux-x64 ]
         exclude:
