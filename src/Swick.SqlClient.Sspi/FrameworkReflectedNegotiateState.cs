@@ -42,7 +42,7 @@ internal sealed class FrameworkReflectedNegotiateState : IDisposable
     public FrameworkReflectedNegotiateState(string package, NetworkCredential credential, string spn)
     {
         // internal NTAuthentication(bool isServer, string package, NetworkCredential credential, string spn, ContextFlagsPal requestedContextFlags, ChannelBinding channelBinding)
-        _instance = _constructor.Invoke(new object?[] { false, package, credential, spn, 0, null });
+        _instance = _constructor.Invoke([false, package, credential, spn, 0, null]);
     }
 
     public byte[] GetOutgoingBlob(byte[]? incomingBlob)

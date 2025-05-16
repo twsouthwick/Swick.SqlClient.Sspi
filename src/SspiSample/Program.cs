@@ -7,9 +7,10 @@ if (args is not [string connectionString])
     return;
 }
 
+using var sspiContextProvider = new NtlmSspiContextProvider();
 using var sqlconnection = new SqlConnection(connectionString)
 {
-    SSPIContextProviderFactory = Ntlm.CreateLoggingProvider
+    SspiContextProvider = sspiContextProvider,
 };
 
 await sqlconnection.OpenAsync();
